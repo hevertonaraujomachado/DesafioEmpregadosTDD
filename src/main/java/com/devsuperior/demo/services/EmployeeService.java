@@ -1,5 +1,6 @@
 package com.devsuperior.demo.services;
 
+import com.devsuperior.demo.repositories.DepartmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,10 +18,13 @@ public class EmployeeService {
     @Autowired
     private EmployeeRepository repository;
 
+    @Autowired
+    private DepartmentRepository departmentRepository; // ✅ adicionar
+
     @Transactional(readOnly = true)
     public Page<EmployeeDTO> findAll(Pageable pageable) {
         Page<Employee> page = repository.findAll(pageable);
-        return page.map(x -> new EmployeeDTO(x));
+        return page.map(EmployeeDTO::new);
     }
 
     @Transactional
@@ -28,11 +32,12 @@ public class EmployeeService {
         Employee entity = new Employee();
         entity.setName(dto.getName());
         entity.setEmail(dto.getEmail());
-        entity.setDepartment(new Department(dto.getDepartmentId(), null));
+
+        // ✅ BUSCAR Department no banco
+        Department dep = departmentRepository.getReferenceById(dto.getDepartmentId());
+        entity.setDepartment(dep);
+
         entity = repository.save(entity);
         return new EmployeeDTO(entity);
     }
 }
-
-
-
