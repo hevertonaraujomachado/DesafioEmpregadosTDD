@@ -22,7 +22,8 @@ public class DepartmentController {
 
     @GetMapping
     public ResponseEntity<List<DepartmentDTO>> findAll() {
-        List<DepartmentDTO> list = (List<DepartmentDTO>) service.findAll();
-        return ResponseEntity.ok(list);
+        List<DepartmentDTO> list = service.findAll();
+        return ResponseEntity.ok().body(list);
+
     }
 }
